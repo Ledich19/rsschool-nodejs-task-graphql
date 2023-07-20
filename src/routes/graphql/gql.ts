@@ -3,6 +3,10 @@ import { PrismaClient } from '@prisma/client';
 import graphql from 'graphql';
 import { MemberTypeId } from '../member-types/schemas.js';
 import { UUIDType } from './types/uuid.js';
+import { memberType, memberTypeIdEnum } from './types/member.js';
+import { postType } from './types/post.js';
+import { userType } from './types/user.js';
+import { profileType } from './types/profile.js';
 const {
   // GraphQLSchema,
   GraphQLObjectType,
@@ -19,46 +23,6 @@ const {
 
 const prisma = new PrismaClient();
 
-const memberTypeIdEnum = new GraphQLEnumType({
-  name: 'MemberTypeId',
-  values: {
-    BASIC: { value: MemberTypeId.BASIC },
-    BUSINESS: { value: MemberTypeId.BUSINESS},
-  },
-});
-
-const memberType = new GraphQLObjectType({
-  name: 'Member',
-  fields: () => ({
-    id: { type: new GraphQLNonNull(memberTypeIdEnum) },
-    discount: { type: GraphQLInt },
-    postsLimitPerMonth: { type: GraphQLInt },
-  }),
-});
-const postType = new GraphQLObjectType({
-  name: 'Post',
-  fields: () => ({
-    id: { type: new GraphQLNonNull(UUIDType) },
-    title: { type: GraphQLString },
-    content: { type: GraphQLString },
-  }),
-});
-const userType = new GraphQLObjectType({
-  name: 'User',
-  fields: () => ({
-    id: { type: new GraphQLNonNull(GraphQLID) },
-    name: { type: GraphQLString },
-    balance: { type: GraphQLFloat },
-  }),
-});
-const profileType = new GraphQLObjectType({
-  name: 'Profile',
-  fields: () => ({
-    id: { type: new GraphQLNonNull(UUIDType) },
-    isMale: { type: GraphQLBoolean },
-    yearOfBirth: { type: GraphQLInt },
-  }),
-});
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
