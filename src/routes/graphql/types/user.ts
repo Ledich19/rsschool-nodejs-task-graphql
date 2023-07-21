@@ -4,7 +4,7 @@ import graphql from 'graphql';
 import { UUIDType } from './uuid.js';
 import { profileType } from './profile.js';
 import { postType } from './post.js';
-const { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLFloat, GraphQLList } =
+const { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLFloat, GraphQLList, GraphQLInputObjectType } =
   graphql;
 const prisma = new PrismaClient();
 
@@ -62,5 +62,13 @@ export const userType = new GraphQLObjectType({
       });
     }
     },
+  }),
+});
+
+export const CreateUserInput = new GraphQLInputObjectType({
+  name: 'CreateUserInput',
+  fields: () => ({
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    balance: { type: GraphQLFloat },
   }),
 });

@@ -1,19 +1,20 @@
-import { PrismaClient } from '@prisma/client';
+import { Post, PrismaClient, Profile, User } from '@prisma/client';
 import graphql from 'graphql';
 import { UUIDType } from './types/uuid.js';
 import { memberType, memberTypeIdEnum } from './types/member.js';
-import { postType } from './types/post.js';
-import { userType } from './types/user.js';
-import { profileType } from './types/profile.js';
+import { CreatePostInput,  postType } from './types/post.js';
+import { CreateUserInput,  userType } from './types/user.js';
+import { CreateProfileInput, profileType } from './types/profile.js';
 const {
   GraphQLObjectType,
   GraphQLList,
   GraphQLNonNull,
   GraphQLSchema,
+  GraphQLString,
+  GraphQLInputObjectType,
 } = graphql;
 
 const prisma = new PrismaClient();
-
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -94,11 +95,44 @@ const RootQuery = new GraphQLObjectType({
       },
     },
   },
+});
 
+const RootMutation = new GraphQLObjectType({
+  name: 'RootMutationType',
+  fields: {
+    createPost: {
+      type: postType,
+      args: { dto: { type: CreatePostInput } },
+      async resolve(parent, args: { dto: Post }, context) {
+        return prisma.post.create({
+          data: args.dto,
+        });
+      },
+    },
+    createUser: {
+      type: userType,
+      args: { dto: { type: CreateUserInput} },
+      async resolve(parent, args: { dto: User }, context) {
+        return prisma.user.create({
+          data: args.dto,
+        });
+      },
+    },
+    createProfile: {
+      type: profileType,
+      args: { dto: { type: CreateProfileInput} },
+      async resolve(parent, args: { dto: Profile }, context) {
+        return prisma.profile.create({
+          data: args.dto,
+        });
+      },
+    },
+  },
 });
 
 const schema = new GraphQLSchema({
   query: RootQuery,
+  mutation: RootMutation,
   types: [userType, memberType, postType, profileType],
 });
 export default schema;

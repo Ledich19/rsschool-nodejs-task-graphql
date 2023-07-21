@@ -1,12 +1,7 @@
 
-import { PrismaClient } from '@prisma/client';
 import graphql from 'graphql';
 import { UUIDType } from './uuid.js';
-const {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLNonNull,
-} = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLInputObjectType } = graphql;
 
 
 export const postType = new GraphQLObjectType({
@@ -15,6 +10,15 @@ export const postType = new GraphQLObjectType({
     id: { type: new GraphQLNonNull(UUIDType) },
     title: { type: GraphQLString },
     content: { type: GraphQLString },
-    authorId: {type: UUIDType}
+    authorId: { type: UUIDType },
+  }),
+});
+
+export const CreatePostInput = new GraphQLInputObjectType({
+  name: 'CreatePostInput',
+  fields: () => ({
+    title: { type: GraphQLString },
+    content: { type: new GraphQLNonNull(GraphQLString) },
+    authorId: { type: new GraphQLNonNull(UUIDType) },
   }),
 });
