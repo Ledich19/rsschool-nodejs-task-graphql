@@ -18,7 +18,6 @@ export const profileType = new GraphQLObjectType({
     memberType: {
       type: memberType,
       async resolve(profile: {memberTypeId: string}) {
-        console.log('------------------', profile);
 
         return await prisma.memberType.findUnique({
           where: { id: profile.memberTypeId },

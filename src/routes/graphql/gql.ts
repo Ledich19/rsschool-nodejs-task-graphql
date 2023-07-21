@@ -1,24 +1,15 @@
-import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { PrismaClient } from '@prisma/client';
 import graphql from 'graphql';
-import { MemberTypeId } from '../member-types/schemas.js';
 import { UUIDType } from './types/uuid.js';
 import { memberType, memberTypeIdEnum } from './types/member.js';
 import { postType } from './types/post.js';
 import { userType } from './types/user.js';
 import { profileType } from './types/profile.js';
 const {
-  // GraphQLSchema,
   GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLID,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLBoolean,
   GraphQLSchema,
-  GraphQLFloat ,
-  GraphQLEnumType
 } = graphql;
 
 const prisma = new PrismaClient();
