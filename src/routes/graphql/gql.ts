@@ -76,7 +76,6 @@ const RootQuery = new GraphQLObjectType({
         return post;
       },
     },
-
     user: {
       type: userType,
       args: {
@@ -91,7 +90,6 @@ const RootQuery = new GraphQLObjectType({
         return user;
       },
     },
-
     profile: {
       type: profileType,
       args: {
@@ -105,6 +103,7 @@ const RootQuery = new GraphQLObjectType({
       },
     },
   },
+
 });
 
 const schema = new GraphQLSchema({
