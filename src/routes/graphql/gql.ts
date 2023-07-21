@@ -1,9 +1,9 @@
 import { Post, PrismaClient, Profile, User } from '@prisma/client';
-import graphql from 'graphql';
+import graphql, { GraphQLBoolean } from 'graphql';
 import { UUIDType } from './types/uuid.js';
 import { memberType, memberTypeIdEnum } from './types/member.js';
-import { CreatePostInput,  postType } from './types/post.js';
-import { CreateUserInput,  userType } from './types/user.js';
+import { CreatePostInput, postType } from './types/post.js';
+import { CreateUserInput, userType } from './types/user.js';
 import { CreateProfileInput, profileType } from './types/profile.js';
 const {
   GraphQLObjectType,
@@ -111,7 +111,7 @@ const RootMutation = new GraphQLObjectType({
     },
     createUser: {
       type: userType,
-      args: { dto: { type: CreateUserInput} },
+      args: { dto: { type: CreateUserInput } },
       async resolve(parent, args: { dto: User }, context) {
         return prisma.user.create({
           data: args.dto,
@@ -120,11 +120,48 @@ const RootMutation = new GraphQLObjectType({
     },
     createProfile: {
       type: profileType,
-      args: { dto: { type: CreateProfileInput} },
+      args: { dto: { type: CreateProfileInput } },
       async resolve(parent, args: { dto: Profile }, context) {
         return prisma.profile.create({
           data: args.dto,
         });
+      },
+    },
+
+    deletePost: {
+      type: GraphQLBoolean,
+      args: { id: { type: UUIDType } },
+      async resolve(parent, args: { id: string }, context) {
+        await prisma.post.delete({
+          where: {
+            id: args.id,
+          },
+        });
+        return null
+      },
+    },
+    deleteProfile: {
+      type: GraphQLBoolean,
+      args: { id: { type: UUIDType } },
+      async resolve(parent, args: { id: string }, context) {
+        await prisma.profile.delete({
+          where: {
+            id: args.id,
+          },
+        });
+        return null
+      },
+    },
+    deleteUser: {
+      type: GraphQLBoolean,
+      args: { id: { type: UUIDType } },
+      async resolve(parent, args: { id: string }, context) {
+        await prisma.user.delete({
+          where: {
+            id: args.id,
+          },
+        });
+        return null
       },
     },
   },
