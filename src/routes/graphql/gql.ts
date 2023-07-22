@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Post, PrismaClient, Profile, User } from '@prisma/client';
 import graphql, { GraphQLBoolean } from 'graphql';
 import { UUIDType } from './types/uuid.js';
@@ -10,8 +11,6 @@ const {
   GraphQLList,
   GraphQLNonNull,
   GraphQLSchema,
-  GraphQLString,
-  GraphQLInputObjectType,
 } = graphql;
 
 const prisma = new PrismaClient();
