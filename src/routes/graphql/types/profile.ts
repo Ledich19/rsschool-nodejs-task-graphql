@@ -11,14 +11,15 @@ const {
 import { MemberType, PrismaClient } from '@prisma/client';
 import { MemberTypeId } from '../../member-types/schemas.js';
 
-const prisma = new PrismaClient();
-
 export type DtoProfileType = {
   isMale: boolean;
   yearOfBirth: number;
   memberTypeId: MemberTypeId;
   userId: string;
 };
+interface MyContext {
+  prisma: PrismaClient;
+}
 
 export const profileType = new GraphQLObjectType({
   name: 'Profile',
@@ -30,8 +31,8 @@ export const profileType = new GraphQLObjectType({
 
     memberType: {
       type: memberType,
-      async resolve(profile: { memberTypeId: string }) {
-        return await prisma.memberType.findUnique({
+      async resolve(profile: { memberTypeId: string }, args,context: MyContext) {
+        return await context.prisma.memberType.findUnique({
           where: { id: profile.memberTypeId },
         });
       },

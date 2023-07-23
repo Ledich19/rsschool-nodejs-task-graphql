@@ -18,15 +18,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async handler(req, reply) {
       const { query, variables } = req.body;
-      // console.log('query;;;;;;;;;;;;;;;;;;;;', query);
-      // console.log('variables;;;;;;;;;;;;;;;;;;;;', variables);
       const parsedData = parse(query);
-      //console.log('-----------------------', parsedData);
       const errors = validate(schema, parsedData, [depthLimit(5)]);
       if (errors.length > 0) {
         const formattedErrors = errors.map((error) => error.message);
-        console.log('------------------', errors);
-        
         await reply.send({
           errors: formattedErrors.map((error) => ({message: error})),
         });

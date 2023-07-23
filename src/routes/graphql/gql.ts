@@ -13,33 +13,35 @@ const {
   GraphQLSchema,
 } = graphql;
 
-const prisma = new PrismaClient();
+interface MyContext {
+  prisma: PrismaClient;
+}
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
     memberTypes: {
       type: new GraphQLList(memberType),
-      async resolve(parent, args, context) {
-        return await prisma.memberType.findMany();
+      async resolve(parent, args, context: MyContext) {
+        return await context.prisma.memberType.findMany();
       },
     },
     posts: {
       type: new GraphQLList(postType),
       async resolve(parent, args, context) {
-        return await prisma.post.findMany();
+        return await context.prisma.post.findMany();
       },
     },
     users: {
       type: new GraphQLList(userType),
       async resolve(parent, args, context) {
-        return await prisma.user.findMany();
+        return await context.prisma.user.findMany();
       },
     },
     profiles: {
       type: new GraphQLList(profileType),
       async resolve(parent, args, context) {
-        return await prisma.profile.findMany();
+        return await context.prisma.profile.findMany();
       },
     },
 
@@ -49,7 +51,7 @@ const RootQuery = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(memberTypeIdEnum) },
       },
       async resolve(parent, args: { id: string }, context) {
-        const memberType = await prisma.memberType.findUnique({
+        const memberType = await context.prisma.memberType.findUnique({
           where: { id: args.id },
         });
         return memberType;
@@ -57,11 +59,11 @@ const RootQuery = new GraphQLObjectType({
     },
     post: {
       type: postType,
-      args: {
+      args: { 
         id: { type: new GraphQLNonNull(UUIDType) },
       },
       async resolve(parent, args: { id: string }, context) {
-        const post = await prisma.post.findUnique({
+        const post = await context.prisma.post.findUnique({
           where: { id: args.id },
         });
         return post;
@@ -72,10 +74,10 @@ const RootQuery = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(UUIDType) },
       },
-      async resolve(parent, args: { id: string }) {
+      async resolve(parent, args: { id: string }, context) {
         console.log('ID:', args.id);
 
-        const user = await prisma.user.findUnique({
+        const user = await context.prisma.user.findUnique({
           where: { id: args.id },
         });
         return user;
@@ -87,7 +89,7 @@ const RootQuery = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(UUIDType) },
       },
       async resolve(parent, args: { id: string }, context) {
-        const profile = await prisma.profile.findUnique({
+        const profile = await context.prisma.profile.findUnique({
           where: { id: args.id },
         });
         return profile;
@@ -102,8 +104,8 @@ const RootMutation = new GraphQLObjectType({
     createPost: {
       type: postType,
       args: { dto: { type: CreatePostInput } },
-      async resolve(parent, args: { dto: Post }, context) {
-        return prisma.post.create({
+      async resolve(parent, args: { dto: Post }, context: MyContext) {
+        return context.prisma.post.create({
           data: args.dto,
         });
       },
@@ -112,7 +114,7 @@ const RootMutation = new GraphQLObjectType({
       type: userType,
       args: { dto: { type: CreateUserInput } },
       async resolve(parent, args: { dto: User }, context) {
-        return prisma.user.create({
+        return context.prisma.user.create({
           data: args.dto,
         });
       },
@@ -121,7 +123,7 @@ const RootMutation = new GraphQLObjectType({
       type: profileType,
       args: { dto: { type: CreateProfileInput } },
       async resolve(parent, args: { dto: Profile }, context) {
-        return prisma.profile.create({
+        return context.prisma.profile.create({
           data: args.dto,
         });
       },
@@ -131,7 +133,7 @@ const RootMutation = new GraphQLObjectType({
       type: GraphQLBoolean,
       args: { id: { type: UUIDType } },
       async resolve(parent, args: { id: string }, context) {
-        await prisma.post.delete({
+        await context.prisma.post.delete({
           where: {
             id: args.id,
           },
@@ -143,7 +145,7 @@ const RootMutation = new GraphQLObjectType({
       type: GraphQLBoolean,
       args: { id: { type: UUIDType } },
       async resolve(parent, args: { id: string }, context) {
-        await prisma.profile.delete({
+        await context.prisma.profile.delete({
           where: {
             id: args.id,
           },
@@ -155,7 +157,7 @@ const RootMutation = new GraphQLObjectType({
       type: GraphQLBoolean,
       args: { id: { type: UUIDType } },
       async resolve(parent, args: { id: string }, context) {
-        await prisma.user.delete({
+        await context.prisma.user.delete({
           where: {
             id: args.id,
           },
@@ -168,7 +170,7 @@ const RootMutation = new GraphQLObjectType({
       type: postType,
       args: { dto: { type: ChangePostInput }, id: { type: UUIDType } },
       async resolve(parent, args: { dto: Post; id: string }, context) {
-        return prisma.post.update({
+        return context.prisma.post.update({
           where: { id: args.id },
           data: args.dto,
         });
@@ -178,7 +180,7 @@ const RootMutation = new GraphQLObjectType({
       type: profileType,
       args: { dto: { type: ChangeProfileInput }, id: { type: UUIDType } },
       async resolve(parent, args: { dto: Profile; id: string }, context) {
-        return prisma.profile.update({
+        return context.prisma.profile.update({
           where: { id: args.id },
           data: args.dto,
         });
@@ -188,7 +190,7 @@ const RootMutation = new GraphQLObjectType({
       type: userType,
       args: { dto: { type: ChangeUserInput }, id: { type: UUIDType } },
       async resolve(parent, args: { dto: User; id: string }, context) {
-        return prisma.user.update({
+        return context.prisma.user.update({
           where: { id: args.id },
           data: args.dto,
         });
@@ -199,7 +201,7 @@ const RootMutation = new GraphQLObjectType({
       type: userType,
       args: { userId: { type: UUIDType }, authorId: { type: UUIDType } },
       async resolve(parent, args: { userId: string; authorId: string }, context) {
-        return await prisma.user.update({
+        return await context.prisma.user.update({
           where: {
             id: args.userId,
           },
@@ -217,7 +219,7 @@ const RootMutation = new GraphQLObjectType({
       type: GraphQLBoolean,
       args: { userId: { type: UUIDType }, authorId: { type: UUIDType } },
       async resolve(parent, args: { userId: string; authorId: string }, context) {
-        await prisma.subscribersOnAuthors.delete({
+        await context.prisma.subscribersOnAuthors.delete({
           where: {
             subscriberId_authorId: {
               subscriberId: args.userId,
